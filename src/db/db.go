@@ -27,7 +27,7 @@ func Carregar() {
 	db.MustExec(modelos.SchemaUsuario) // executa a criação da tabela de usuários
 }
 
-func AbrirDB() (*sqlx.DB, error) {
+func Abrir() (*sqlx.DB, error) {
 	db, err = sqlx.Connect("postgres", config.StringConexaoDB)
 	if err != nil {
 		return nil, err
