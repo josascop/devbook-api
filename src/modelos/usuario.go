@@ -3,6 +3,7 @@ package modelos
 
 import (
 	"errors"
+	"josascop/calculadorago/api/src/seguranca"
 	"strings"
 	"time"
 
@@ -30,7 +31,9 @@ type Usuario struct {
 }
 
 func (u *Usuario) Preparar(etapa string) error {
-	u.formatar()
+	if err := u.formatar(etapa); err != nil {
+		return err
+	}
 
 	if err := u.validar(etapa); err != nil {
 		return err
@@ -39,15 +42,26 @@ func (u *Usuario) Preparar(etapa string) error {
 	return nil
 }
 
-func (u *Usuario) formatar() {
+func (u *Usuario) formatar(etapa string) error {
 	u.Nome = strings.TrimSpace(u.Nome)
 	u.Email = strings.TrimSpace(u.Email)
 	u.Nick = strings.TrimSpace(u.Nick)
+
+	if etapa == "inserir" {
+		s, err := seguranca.Hash(u.Senha)
+		if err != nil {
+			return err
+		}
+
+		u.Senha = string(s)
+	}
+
+	return nil
 }
 
 // Bind injeta o corpo do request no struct e também faz as validações
 func (u *Usuario) validar(etapa string) error {
-	u.formatar()
+	u.formatar(etapa)
 
 	if err := checkmail.ValidateFormat(u.Email); err != nil {
 		return errors.New("informe um email válido")
