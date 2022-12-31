@@ -3,9 +3,10 @@ package modelos
 
 import (
 	"errors"
-	"net/http"
 	"strings"
 	"time"
+
+	"github.com/badoux/checkmail"
 )
 
 // SchemaUsuario é a string para criação da tabela no banco de dados pelo sqlx
@@ -28,6 +29,16 @@ type Usuario struct {
 	CriadoEm time.Time `json:"criadoem,omitempty" db:"criadoem"`
 }
 
+func (u *Usuario) Preparar(etapa string) error {
+	u.formatar()
+
+	if err := u.validar(etapa); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *Usuario) formatar() {
 	u.Nome = strings.TrimSpace(u.Nome)
 	u.Email = strings.TrimSpace(u.Email)
@@ -35,20 +46,20 @@ func (u *Usuario) formatar() {
 }
 
 // Bind injeta o corpo do request no struct e também faz as validações
-func (u *Usuario) Bind(r *http.Request) error {
+func (u *Usuario) validar(etapa string) error {
 	u.formatar()
 
-	if u.Email == "" {
-		return errors.New("informe um email para o usuário")
+	if err := checkmail.ValidateFormat(u.Email); err != nil {
+		return errors.New("informe um email válido")
 	}
-	if u.Senha == "" {
-		return errors.New("informe uma senha para o usuário")
+	if etapa == "inserir" && u.Senha == "" {
+		return errors.New("informe uma senha válida")
 	}
 	if u.Nick == "" {
-		return errors.New("informe um nick para o usuário")
+		return errors.New("informe um nick válido")
 	}
 	if u.Nome == "" {
-		return errors.New("informe um nome para o usuário")
+		return errors.New("informe um nome válido")
 	}
 	if len(u.Nome) < 3 {
 		return errors.New("o nome do usuário deve ter ao menos três caracteres")

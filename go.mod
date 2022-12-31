@@ -7,9 +7,6 @@ require (
 	github.com/joho/godotenv v1.4.0
 )
 
-require (
-	github.com/go-chi/render v1.0.2
-	github.com/lib/pq v1.10.7
-)
+require github.com/lib/pq v1.10.7
 
-require github.com/ajg/form v1.5.1 // indirect
+require github.com/badoux/checkmail v1.2.1 // indirect

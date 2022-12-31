@@ -1,18 +1,24 @@
 package respostas
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
-
-	"github.com/go-chi/render"
 )
 
-func JSON(w http.ResponseWriter, r *http.Request, status int, dados interface{}) {
+func JSON(w http.ResponseWriter, status int, dados interface{}) {
 	w.WriteHeader(status)
-	render.JSON(w, r, dados)
+	w.Header().Set("Content-Type", "application/json")
+
+	if dados != nil {
+		if err := json.NewEncoder(w).Encode(dados); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
-func Erro(w http.ResponseWriter, r *http.Request, status int, e error) {
-	JSON(w, r, status, struct {
+func Erro(w http.ResponseWriter, status int, e error) {
+	JSON(w, status, struct {
 		Erro string `json:"erro"`
 	}{
 		Erro: e.Error(),
