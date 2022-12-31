@@ -1,22 +1,22 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 	"josascop/calculadorago/api/src/config"
 	"josascop/calculadorago/api/src/modelos"
 	"log"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // driver
 )
 
 var (
-	db  *sqlx.DB
+	db  *sql.DB
 	err error
 )
 
 func Carregar() {
-	db, err = sqlx.Connect("postgres", config.StringConexaoDB)
+	db, err = sql.Open("postgres", config.StringConexaoDB)
 	if err != nil {
 		log.Println(err.Error())
 		fmt.Println("Impossível conectar ao banco de dados.\nEncerrando aplicação.")
@@ -24,11 +24,16 @@ func Carregar() {
 	}
 	defer db.Close()
 
-	db.MustExec(modelos.SchemaUsuario) // executa a criação da tabela de usuários
+	_, err = db.Exec(modelos.SchemaUsuario) // executa a criação da tabela de usuários
+	if err != nil {
+		log.Println(err.Error())
+		fmt.Println("Impossível conectar ao banco de dados.\nEncerrando aplicação.")
+		log.Fatal("Impossível conectar ao banco de dados.\nEncerrando aplicação.")
+	}
 }
 
-func Abrir() (*sqlx.DB, error) {
-	db, err = sqlx.Connect("postgres", config.StringConexaoDB)
+func Abrir() (*sql.DB, error) {
+	db, err = sql.Open("postgres", config.StringConexaoDB)
 	if err != nil {
 		return nil, err
 	}

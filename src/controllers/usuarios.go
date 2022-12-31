@@ -7,9 +7,7 @@ import (
 	"josascop/calculadorago/api/src/respostas"
 	"log"
 	"net/http"
-	"strings"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -42,7 +40,7 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 
 // /usuarios?busca=junin
 func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
-	nome := strings.ToLower(chi.URLParam(r, "busca"))
+	nome := r.URL.Query().Get("busca")
 
 	db, err := db.Abrir()
 	if err != nil {

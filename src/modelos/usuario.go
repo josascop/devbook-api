@@ -1,3 +1,4 @@
+// Package modelos ++++++++++
 package modelos
 
 import (
@@ -24,7 +25,7 @@ type Usuario struct {
 	Nick     string    `json:"nick,omitempty"`
 	Email    string    `json:"email,omitempty"`
 	Senha    string    `json:"senha,omitempty"`
-	CriadoEm time.Time `json:"criadoEm,omitempty" db:"criadoem"`
+	CriadoEm time.Time `json:"criadoem,omitempty" db:"criadoem"`
 }
 
 func (u *Usuario) formatar() {
